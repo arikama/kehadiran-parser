@@ -20,7 +20,11 @@ pub fn run(pdf_dir: String, out_dir: String) -> i32 {
                 if file_path.is_dir() {
                     continue;
                 }
-                if file_path.extension().unwrap() != "pdf" {
+                if let Some(ext) = file_path.extension() {
+                    if ext != "pdf" {
+                        continue;
+                    }
+                } else {
                     continue;
                 }
                 println!("pdf_file: {}", file_path.display());
