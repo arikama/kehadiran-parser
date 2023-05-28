@@ -63,7 +63,7 @@ pub fn run(pdf_dir: String, out_dir: String) -> i32 {
                     + ".json";
                 if let Ok(mut json_file) = File::create(json_file_path) {
                     let parsed = parse(content);
-                    let json_string = serde_json::to_string(&parsed).unwrap();
+                    let json_string = serde_json::to_string_pretty(&parsed).unwrap();
                     if let Ok(()) = json_file.write_all(json_string.as_bytes()) {}
                 }
             }
