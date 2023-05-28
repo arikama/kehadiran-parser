@@ -34,5 +34,4 @@ jobs:
             IdentityFile ~/.ssh/prod.key
             StrictHostKeyChecking no
           END
-      - run: scp target/release/kehadiran-parser prod:/home/$SSH_USER/
-      - run: ssh prod './kehadiran-parser'
+      - run: scp target/release/kehadiran-parser prod:/home/$SSH_USER/kehadiran/
