@@ -295,6 +295,8 @@ version = "0.1.0"
 dependencies = [
  "config",
  "pdf-extract",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
