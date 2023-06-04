@@ -35,5 +35,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
 
     kehadiran_parser::run(&pdf_dir, &out_dir)?;
+
     Ok(())
 }
