@@ -2,15 +2,15 @@ use std::{path::PathBuf, str::FromStr};
 
 use clap::Parser;
 
-/// Simple program to greet a person
+/// Program to parse PDF of Malaysian MPs attendance
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    /// Name of the person to greet
+    /// Path to the PDF directory
     #[arg(short, long)]
     pdf_dir: String,
 
-    /// Number of times to greet
+    /// Path to the output directory
     #[arg(short, long)]
     out_dir: String,
 }
