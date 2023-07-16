@@ -34,6 +34,6 @@ jobs:
             IdentityFile ~/.ssh/prod.key
             StrictHostKeyChecking no
           END
-      - run: ssh prod 'tmux send-keys -t kehadiran_parser_cron ^C'
-      - run: scp target/release/kehadiran-parser prod:/home/$SSH_USER/kehadiran/
-      - run: ssh prod 'tmux send-keys -t kehadiran_parser_cron "./kehadiran_parser_cron.sh" ENTER'
+      # - run: ssh prod 'tmux send-keys -t kehadiran_parser_cron ^C'
+      - run: scp target/release/kehadiran-parser prod:/home/$SSH_USER/bin/
+      # - run: ssh prod 'tmux send-keys -t kehadiran_parser_cron "./kehadiran_parser_cron.sh" ENTER'

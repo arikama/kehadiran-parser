@@ -8,7 +8,7 @@ use std::collections::HashSet;
 use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 #[derive(Serialize, Deserialize)]
 struct ParliamentMeeting {
@@ -36,7 +36,7 @@ lazy_static! {
     static ref NAME_REGEX: Regex = Regex::new(r"[A-Z()][\w,’'()@/\.\- ]+").unwrap();
 }
 
-pub fn run(pdf_dir: &Path, _: &Path) -> Result<(), Box<dyn std::error::Error>> {
+pub fn run(pdf_dir: &Path, out_dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
     let entries = fs::read_dir(pdf_dir)?;
     for entry in entries {
         let entry = entry?;
@@ -51,19 +51,14 @@ pub fn run(pdf_dir: &Path, _: &Path) -> Result<(), Box<dyn std::error::Error>> {
         } else {
             continue;
         }
-        println!("Processing: pdf_file={}", file_path.display());
         let bytes = std::fs::read(file_path.display().to_string())?;
+        println!("parsing pdf file: pdf_file={}", file_path.display());
         let content = pdf_extract::extract_text_from_mem(&bytes)?;
-        let json_file_path = file_path
-            .display()
-            .to_string()
-            .trim_end_matches(".pdf")
-            .clone()
-            .to_owned()
-            + ".json";
+        let parsed = parse(content);
+        let json_string = serde_json::to_string_pretty(&parsed)?;
+        let json_file_path = get_out_json_path(out_dir, &file_path).unwrap();
+        println!("saving json file: json_file={}", json_file_path.display());
         if let Ok(mut json_file) = File::create(json_file_path) {
-            let parsed = parse(content);
-            let json_string = serde_json::to_string_pretty(&parsed)?;
             json_file.write_all(json_string.as_bytes())?;
         }
     }
@@ -192,9 +187,27 @@ fn get_name_words(line: &str) -> Vec<String> {
     }
 }
 
+fn get_out_json_path(out_dir: &Path, file_path: &PathBuf) -> Option<PathBuf> {
+    file_path
+        .file_name()
+        .map(|name| out_dir.join(name).with_extension("json"))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::path::PathBuf;
+
+    #[test]
+    fn test_get_out_file_path() {
+        let pdf_path = PathBuf::from("/home/cglotr/ws/kehadiran/2023-05-24.pdf");
+        let out_dir = PathBuf::from("/home/cglotr/ws/kehadiran-parser/");
+        let actual = get_out_json_path(&out_dir, &pdf_path).unwrap();
+        assert_eq!(
+            actual,
+            PathBuf::from("/home/cglotr/ws/kehadiran-parser/2023-05-24.json")
+        );
+    }
 
     #[test]
     fn test_is_attendees_header() {
